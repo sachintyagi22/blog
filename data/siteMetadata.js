@@ -10,7 +10,7 @@ const siteMetadata = {
   siteLogo: '/static/images/logo.png',
   image: '/static/images/sachin.png',
   socialBanner: '/static/images/twitter-card.png',
-  email: 'satto.in@gmail.com',
+  email: 'sachin.tyagi@gmail.com',
   github: 'https://github.com/sachintyagi22',
   twitter: 'https://twitter.com/truthin_tyagi',
   linkedin: 'https://www.linkedin.com/in/sachin-tyagi',

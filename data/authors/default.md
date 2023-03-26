@@ -3,7 +3,7 @@ name: Sachin Tyagi
 avatar: /static/images/sachin.jpeg
 occupation: Head of Data Engineering
 company: Symmetry Systems, Inc.
-email: satto.in@gmail.com
+email: sachin.tyagi@gmail.com
 twitter: https://twitter.com/truthin_tyagi
 linkedin: https://www.linkedin.com/in/sachin-tyagi
 github: https://github.com/sachintyagi22
