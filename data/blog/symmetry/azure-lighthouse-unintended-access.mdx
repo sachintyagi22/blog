@@ -1,0 +1,108 @@
+---
+title: 'Unintended Third-Party Access to Data Through Supported Azure Built-In Roles'
+date: '2023-01-25'
+tags: ['symmetry', 'azure', 'security', 'cloud']
+draft: false
+summary: 'A combination of built-in contributor permissions could allow unintended data access in Azure Lighthouse.'
+---
+
+_Originally published on Symmetry's [blog](https://www.symmetry-systems.com/blog/unintended-third-party-access-to-data-through-supported-azure-built-in-roles)._
+
+## Introduction
+
+Public cloud platforms are complex systems with multiple subsystems that, while individually behaving correctly, may still interact with each other in unexpected ways with implications for data security.
+
+In this blog, we describe how certain built-in Azure permissions can bypass limitations in Azure Lighthouse resulting in unexpected privileges, including the possibility of third-party vendors and service providers having access to a customer’s business data stored by any of Azure's services.
+
+## Azure Lighthouse Limitations: Unintended Access Configurations
+
+Azure Lighthouse users and service providers appreciate it for its ease of management and security features. These security features are designed to only allow service providers to manage the resources on behalf of their customers, with roles intended to access customer data not supported. However, we found that a combination of configurations that look harmless by themselves can unexpectedly allow service providers to access data in some specific cases.
+
+## What is Azure Lighthouse?
+
+Azure Lighthouse is a service that “enables multi-tenant management with scalability, higher automation, and enhanced governance.” According to Azure documentation, Lighthouse "..helps service providers simplify customer engagement and onboarding experiences [so that] customers maintain control over who has access to their tenant, which resources they can access, and what actions can be taken.”
+
+In simpler terms, Azure Lighthouse allows service providers to manage certain aspects of a customer’s cloud environment, such as security analytics, without having to create identities in the customer’s Azure Active Directory tenant.
+
+![Lighthouse Architecture](/static/images/symmetry/lighthouse/lh_architecture.jpeg)
+
+<center>
+  Fig. 1. Azure Lighthouse Architecture. Service providers can onboard multiple tenants without
+  having an account in their customer’s tenant. Source: [Azure Lighthouse
+  Documentation](https://learn.microsoft.com/en-us/azure/lighthouse/concepts/architecture)
+</center>
+
+One attractive component with Lighthouse is that it limits service provider access to specific roles. These roles typically allow only management plane permissions. Roles meant to interact directly with data stored within a particular resource (i.e., the data plane permissions) can not be delegated to service providers. This reduces the risk of a misconfiguration which could result in the service providers getting any access to the customer’s data.
+
+Or at least so the thinking goes. The rest of this post explains how we found some of these expectations were not met in subtle and unexpected ways.
+
+## Exploring the Use of Azure Lighthouse in Managing Data Actions
+
+At Symmetry Systems, we are passionate about ensuring our customers maintain control of their data at all times. This is the primary driver behind our customer-native deployment model. In the customer native model, DataGuard is deployed in the customer’s cloud tenant.
+
+However, on occasions, we are asked to provide a Symmetry Systems-hosted model. In the Symmetry-hosted model, DataGuard is deployed in the Symmetry Systems tenant.
+
+Regardless of the deployment choice we are always looking for opportunities to simplify and secure our deployment model to give our customers greater control over their data.
+This initially led us to explore the use of Azure Lighthouse to project customers' resources into the Symmetry’s tenant. (NOTE: We now use an Application Service Principal in the customer’s environment to get the least privilege read only permissions needed for DataGuard.) The use of Azure Lighthouse would have allowed a customer-dedicated DataGuard instance deployed within our tenant to scan the customer's Azure environment and identify any security or configuration issues.
+
+At first glance, Azure Lighthouse is well suited for such a use case because it gives service providers like Symmetry Systems a way to read and manage certain aspects of the customer’s environment without giving that service provider access to the customer’s data. (For example, a service provider could list the storage accounts and its role assignments but not the data within those datastores managed by the accounts.)
+
+Azure Lighthouse documentation clearly states that Azure Lighthouse does not support any built-in roles with DataActions permission to be delegated to the service providers. Specifically, Lighthouse disallows any custom roles and allows only those roles that do not have explicit DataAction permission. In essence, this implicitly limits delegated permissions to the control plane only.
+
+> ### Role support for Azure Lighthouse
+>
+> When defining an authorization, each user account must be assigned one of the [Azure built-in roles](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles). Custom roles and [classic subscription administrator roles](https://learn.microsoft.com/en-us/azure/role-based-access-control/classic-administrators) are not supported.
+>
+> All built-in roles are currently supported with Azure Lighthouse, with the following exceptions:
+>
+> The [Owner role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) is not supported.
+> Any built-in roles with [DataActions](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-definitions#dataactions) permission are not supported.
+> The [User Access Administrator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#user-access-administrator) built-in role is supported, but only for the limited purpose of [assigning roles to a managed identity in the customer tenant](https://learn.microsoft.com/en-us/azure/lighthouse/how-to/deploy-policy-remediation#create-a-user-who-can-assign-roles-to-a-managed-identity-in-the-customer-tenant). No other permissions typically granted by this role will apply. If you deﬁne a user with this role, you must also specify the built-in role(s) that this user can assign to managed identities.
+> In some cases, a role that had previously been supported with Azure Lighthouse may become unavailable. For example, if the [DataActions](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-definitions#dataactions) permission is added to a role that previously didn't have that permission, that role can no longer be used when onboarding new delegations. Users who had already been assigned the role will still be able to work on previously delegated resources, but they won't be able to perform tasks that use the [DataActions](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-definitions#dataactions) permission.
+
+<center>
+  _Source: [Tenants, users, and roles in Azure Lighthouse
+  scenarios](https://learn.microsoft.com/en-us/azure/lighthouse/concepts/tenants-users-roles#role-support-for-azure-lighthouse)_
+</center>
+
+## What We Found
+
+On further investigation, we were surprised to find that for one of our customers, onboarded through Azure Lighthouse, we were able to access and download data from their Blob stores. While analyzing a DataGuard finding in the customer’s environment, one of our engineers found that not only could they list the blobs but they could also download them. This was surprising and concerning because we were not expecting any data access to be granted through Lighthouse.
+
+On further investigation and escalation to the Azure support team, we pinpointed the unique circumstances which were allowing us access to customer’s data through Lighthouse. It turned out that a role without DataAction permissions, in conjunction with the behaviors of Azure Lighthouse, the Azure Storage Account, and the Azure portal could lead to the surprising outcome of being able to access data within the subscriptions on boarded through Azure Lighthouse. This is described in detail below.
+
+While onboarding the customers onto Lighthouse, we ask for only two roles to be delegated to Symmetry:
+
+[Reader Role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#reader): Used to view only the resources and their metadata in the customer’s environment. This is needed so that DataGuard can read what resources exist and who has access to them.
+
+![Reader Role](/static/images/symmetry/lighthouse/reader.png)
+
+<center>Fig. 2: No DataActions Permissions in Built-in Reader Role</center>
+
+[Log Analytics Contributor](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#log-analytics-contributor): Used to read and edit monitoring settings. This is needed so that we can configure certain activity and other logs to be delivered at locations to enable DataGuard to monitor the activities and operations happening within the customer’s environment.
+
+![Log Analytics Contributor Role](/static/images/symmetry/lighthouse/log_contrib.png)
+
+<center>Fig. 3: No DataActions Permissions in Built-In Log Analytics Contributor Role</center>
+
+As highlighted in the above screenshots taken from Azure portal, neither of these roles grant any [DataAction](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-definitions#control-and-data-actions) permissions and, as such, are not expected to allow any access to a customer’s business data stored by any of Azure's services.
+
+However, upon further investigation, we found that the Log Analytics Contributor role does provide “Microsoft.Storage/storageAccounts/listKeys/action” permission. While this action is not deemed a DataAction and is therefore not objected to by Azure Lighthouse, this permission does [allow one to access blob data in a storage account](https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-data-operations-portal#use-the-account-access-key) through Azure portal.
+
+As a result, within the Symmetry customer tenant, these roles granted unexpected access through the Azure Portal to data in the customer's Blob store bypassing the restrictions of Azure Lighthouse.
+
+## Recommendations from Azure
+
+After the above diagnosis, we reached out to the Azure support team for possible mitigations to address this issue. The support team suggested a three options which, unfortunately, turned out to be non-starters in our case.
+
+1. First, it was suggested that we turn off the storage account authorization via Access Keys and instead use the Active Directory-based authorization. This option was not feasible as it was not up to Symmetry to make that decision. The customer could have had their own valid reasons to prefer using Access Keys authorization instead of AD authorization.
+2. It was also suggested that we drop the Log Analytics Contributor role that was giving us the “Microsoft.Storage/storageAccounts/listKeys/action” permission. This would have left us with no ability to configure and manage monitoring aspects of our customer’s environment defeating the whole purpose of using the Azure Lighthouse in the first place.
+3. Microsoft also suggested moving storage resources to a different subscription and not providing delegated access to the subscription where the storage resources are located. However, like option #2 above, this did not give us the ability to monitor storage resources in customer environments.
+
+It is also worth noting here that Azure Lighthouse does not allow using custom roles, which would have enabled us to simply remove the offending permission. This restriction is probably meant to ensure that Lighthouse [can only delegate tightly controlled built-in roles](https://learn.microsoft.com/en-us/azure/lighthouse/concepts/tenants-users-roles#role-support-for-azure-lighthouse), but it left us in a bind.
+
+## Azure Lighthouse Limitations: Lessons Learned
+
+This case highlights how multiple services, each of which may be acting correctly according to its own specification, may still in combination with each other give rise to unexpected and [emergent behavior](https://en.wikipedia.org/wiki/Emergence) with serious implications for data security. It thus becomes extremely difficult, if not impossible, to reason a priori about such complex systems.
+
+The best approach in such a situation is to have complete visibility around what goes on in complex and interconnected environments and be able to take quick remedial actions when something undesirable and unexpected occurs.

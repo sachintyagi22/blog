@@ -1,16 +1,22 @@
 ---
-name: Tails Azimuth
-avatar: /static/images/avatar.png
-occupation: Professor of Atmospheric Science
-company: Stanford University
-email: address@yoursite.com
-twitter: https://twitter.com/Twitter
-linkedin: https://www.linkedin.com
-github: https://github.com
+name: Sachin Tyagi
+avatar: /static/images/sachin.jpeg
+occupation: Head of Data Engineering
+company: Symmetry Systems, Inc.
+email: satto.in@gmail.com
+twitter: https://twitter.com/truthin_tyagi
+linkedin: https://www.linkedin.com/in/sachin-tyagi
+github: https://github.com/sachintyagi22
 ---
 
-Tails Azimuth is a professor of atmospheric sciences at the Stanford AI Lab. His research interests includes complexity modelling of tailwinds, headwinds and crosswinds.
+Hi, I am Sachin Tyagi!
 
-He leads the clean energy group which develops 3D air pollution-climate models, writes differential equation solvers, and manufactures titanium plated air ballons. In his free time he bakes raspberry pi.
+I love to understand, build, and explain stuff.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate.
+My area of expertise include data engineering, distributed systems, and cloud platforms. Currently I head data engineering at Symmetry Systems where I work on building a scalable, fast, and cost-effective data and analytics platform.
+
+Prior to Symmetry, I co-founded Optobizz, a fintech and compliance company focused on Indian small and medium business. At Optobizz, I built Optotax, a Goods and Services Tax (GST) compliance product used by over 1 million Indian businesses to prepare, analyze, and file their tax returns.
+
+Optotax was acquired by Open Financial Technologies, a neo-bank for Indian businesses. As VP of Engineering at Open, I worked on building core banking and compliance solutions.
+
+I am a functional programming enthusiast and in my spare time I love to explore category theory and theory of programming languages. Outside of work, I enjoy running (both outdoors and after my kids) and playing, watching, and opining on cricket!
