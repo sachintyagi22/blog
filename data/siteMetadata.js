@@ -1,5 +1,5 @@
 const siteMetadata = {
-  title: 'Sachin Tyagi',
+  title: 'Satto',
   author: 'Sachin Tyagi',
   headerTitle: 'Sachin Tyagi',
   description: '',
