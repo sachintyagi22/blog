@@ -1,0 +1,50 @@
+---
+title: 'Thoughts on Software Design'
+date: '2023-04-04'
+tags: ['Software', 'design']
+draft: false
+summary: ''
+---
+
+_Originally published on my [LinkedIn](https://www.linkedin.com/pulse/thoughts-software-design-sachin-tyagi/)._
+
+Much of software design and development advice is a variant of the following dictum (though not always expressed in those terms):
+
+> "Try to keep your necessary and contingent truths separate from each other. And make the ratio of necessary truths to contingent truths as high as feasible."
+
+First let me explain what I mean by some of the above terms:
+
+1. Necessary truths (Leibniz also called these "truths of reason" [^1]): these are the truths that must necessarily be true or else it results in a logical contradiction. All mathematical theorems are necessary truths. They follow directly from the axioms of their respective theories. Notably, you do not need to observe existing world to know them (no one ever measured sum of angles of all the triangles in Euclidean geometry to come to the conclusion that it must be 180 degrees for all triangles. This fact follows directly from the definitions of the terms involved: points, lines, angles, and triangles).
+2. Contingent truths (Leibniz also called these "truths of fact"): these, on the other hand, are not necessarily true. Which means even if they were false, it would not result in any logical contradiction. For example, "I am wearing a yellow t-shirt at the moment of writing this sentence" is a truth. But it is not a necessary truth. I might as well have chosen a blue shirt today, and it wouldn't have resulted in any logical contradiction. Notably, you need to observe the actual existing world to establish the truthfulness of these truths.
+
+Now, you can think of all software development and design as modelling of truths in a certain domain of discourse. And as we have already seen above, truths come in two broad varieties: necessary and contingent.
+
+Now, why should we care about the relative distribution of these two kinds of truths in our software?
+
+Allow me a moment here while I climb the shoulder of a giant and answer it in his voice. I quote Dijkstra from his ACM Turing Award lecture (recommended to be read in full) [^2]:
+
+> Today a usual technique is to make a program and then to test it. But: program testing can be a very effective way to show the presence of bugs, but it is hopelessly inadequate for showing their absence. The only effective way to raise the confidence level of a program significantly is to give a convincing proof of its correctness. But one should not first make the program and then prove its correctness, because then the requirement of providing the proof would only increase the poor programmer's burden. On the contrary: the programmer should let correctness proof and program grow hand in hand.
+
+Do you see it? The crucial point here is: testing can only prove presence of bugs but not their absence. Why? Because absence of bugs requires a proof. Say you have written 100 tests for your program and your program passes all those 100 tests. What does this show? It only shows that your program does not have those 100 bugs that were tested by those 100 tests. Is there a guarantee that it will not have a 101st bug that you failed to account for and did write test for? No. The only sure way to guarantee that your program is free from all bugs is to write a mathematical proof.
+
+Now, the only truths for which you can write proofs are necessary truths. You can not write proofs for contingent truths. Why? Because negation of contingent truths does not result in any contradiction -- there is no logical necessity for them to be true. There is no proof of the proposition - "The author of this sentence is wearing a yellow t-shirt while writing it" even if it is true. All you can do is peep into the world and observe whether it is the case that author's shirt is yellow. Or, in other words, write a very specific test to test a specific set of assertions (but no proof).
+
+From all this, it follows that if your program has a high fraction of necessary truths then the correctness of that fraction can be guaranteed by proofs. However, the correctness of the program that has contingent truths can only be evaluated (inadequately as it turns out) by writing specific tests.
+
+So an ideal program (should we use a term "pure" program analogous to the pure functions in functional programming? [^3]) is one which models only necessary truths. Example of an ideal program? I think a calculator program would be a good fit (if you ignore the non-idealness due to its IO interactions with real world). In what sense is such a program ideal? I think it can be called ideal in two senses:
+
+1. It is ideal in the sense that we can actually prove correctness of such a program (and not merely test it).
+
+2. The term ideal is also suitable in a different sense -- such programs model pure ideas! Let's recall that our necessary truths are truths of reason and we do not need to observe any existing reality to establish their truthfulness. So where does the truthfulness of such truths exists if not in an existing material world? You can say it exists in ideas of the terms involved and their relations to each other. (The truthfulness of the proposition "Sum of all angles of a triangle in Euclidean geometry is 180 degrees" exists entirely in the ideas of points, lines, and angles.)
+
+Obviously there is a limit to how much idealness (or purity or necessary truths) you can put in your programs. Most useful programs model some existing real world material domain. If you're writing, say a GST filing software, then you have to make sure that tax rates and tax computations are correct and legal, even if their legality/correctness is not a "truth of reason" but rather a "truth of fact".
+
+So the best you can do in such cases is -- separate out your necessary truths from the contingent truths and try to maximize fraction of necessary truths to the extent possible. We have already seen why maximizing fraction of necessary truths is useful (we get guarantee of correctness of the corresponding fraction) but why should we keep the two separate? This is needed because necessary truths are invariant while contingent truths are not. And this affects the cost of software maintenance.
+
+Consider: as time passes, your software might need to be changed because some contingent truths in real world have changed changed. (Look at the changes to laws and rules of GST since its inception)! However, necessary truths are safe from such changes. Now if you have kept your contingent truths separate from your necessary truths then the surface area of what needs to be changed is reduced and you will in general have an easier time doing such changes.
+
+Let me know what you think in comments.
+
+[^1]: https://plato.stanford.edu/entries/leibniz/#TruReaTruFac
+[^2]: https://dl.acm.org/ft_gateway.cfm?id=1283927&type=pdf
+[^3]: Or other way round -- pure functions can also be called ideal functions because the definition of pure functions says that their behavior is not depend on any external existing reality. So they too are ideal in that sense.
