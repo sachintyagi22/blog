@@ -1,7 +1,7 @@
 const siteMetadata = {
   title: 'Satto',
   author: 'Sachin Tyagi',
-  headerTitle: 'Sachin Tyagi',
+  headerTitle: 'Thinking Aloud',
   description: '',
   language: 'en-us',
   theme: 'system', // system, dark or light
