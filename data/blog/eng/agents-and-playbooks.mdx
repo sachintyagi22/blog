@@ -1,0 +1,27 @@
+---
+title: 'Why AI Agents Still Need a Playbook'
+date: '2025-07-09'
+tags: ['Agents', 'AI', 'Automation']
+draft: false
+summary: 'Balancing flexibility and control is key to bringing AI agents safely and effectively into enterprise operations.'
+---
+
+_Originally published on my [LinkedIn](https://www.linkedin.com/posts/sachin-tyagi_i-was-recently-speaking-with-someone-exploring-activity-7348263681010319361-LBo2)._
+
+I was recently speaking with someone exploring how to automate parts of their procurement workflow using AI agents. Since I’m not deeply familiar with procurement, I asked how things are typically done today. They had already done their homework and had a workflow diagram for their current process handy!
+
+Looking at it my first thought was that this is a fairly "solved" problem (at least if you're determined/desperate enough). After all, BPM tools, workflow engines, orchestration frameworks, and actor systems (like Erlang or the now-sunset Akka etc.) have been around for decades.
+
+These traditional systems are deterministic by design. But also quite rigid. They rely on hard-coded logic and rule sets that are often difficult to update and can be limiting in complex or evolving environments. Their “degree of freedom” is essentially fixed at build time.
+
+On the other end of the spectrum, we now have "free-form agents" powered by LLMs. These systems have a much wider (and fuzzier) range of behaviors. Their degree of freedom is defined by what the LLM can interpret and execute, now through dynamic tool use too.
+
+In some sense, this is the classic bias-variance tradeoff. On one side, you have systems that are highly "biased" - predictable, constrained, and easy to reason about, but often inflexible. On the other, LLM-based agents can exhibit high variance - capable of novel and creative solutions, but harder to control or guarantee.
+
+The key insight, I think, is that in real-world organizational settings, we need a thoughtful combination of both. Deterministic repeatability is as important, if not more, as creative flexibility. (Revealed preference: how many organizations prefer codified deterministic processes over creative execution by unarguably intelligent agents i.e. their own employees? In regulated industries?)
+
+It’s still early days, but I believe the most successful agentic systems will be those that blend the strengths of both the approaches:
+
+- grounded and deterministic guardrails to constrain the overall degrees-of-freedom of the system in critical, regulated, or safety-sensitive areas (while being flexible and underspecified in others)
+
+- a collection of autonomous agents traversing these "safe" pathway to accomplish certain tasks and jobs with flexibility.
