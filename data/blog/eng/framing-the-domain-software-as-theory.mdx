@@ -1,0 +1,21 @@
+---
+title: 'Framing the Domain: Software as Theory'
+date: '2026-03-31'
+tags: ['Software', 'Theory', 'Design']
+draft: false
+summary: 'Why the hardest part of software is choosing a coherent frame for the domain, and how that framing shapes everything from primitives to how easily the system can evolve.'
+---
+
+It’s a truth now universally acknowledged that the hard part of writing software is not the legible text that conforms to a shared syntax. That part matters, but it is not where most of the real difficulty lives.
+
+The harder problem is constructing a workable theory of the domain. What are the right objects, relations, boundaries, invariants, and axes of change? What is the frame in which this messy slice of reality should even be expressed? Before one can write good code, one usually has to decide what kind of things the system believes the world to be.
+
+Only then does the next challenge appear: the “prime decomposition” of the domain. Once the frame is chosen, you still have to break reality into a small enough set of primitives such that the domain becomes not just representable, but representable well.
+
+This is why the framing choice is so consequential. Without a coherent frame, software development turns into whack-a-mole: each new requirement is handled locally, each bug produces another special case, and each operational pain leads to one more compensating mechanism. The system may still function, but the underlying theory has weakened, so the cost of change rises and more energy gets spent fighting low-ROI battles created by earlier conceptual choices.
+
+Of course, the frame need not be fixed forever. Good software design is not the discovery of an eternal ontology. It is closer to theory-building: you begin with a frame coherent enough to organize reality, then revise it as reality pushes back. But that iterative aspect does not reduce the importance of the frame. If anything, it makes it more important. A frame can evolve, but it still needs enough coherence to guide local decisions. Otherwise iteration degenerates into drift.
+
+This is also why current LLM-based coding assistance is helpful, but only up to a point. It can accelerate expression once the conceptual shape is already there. It can help with syntax, boilerplate, refactoring, and sometimes even reveal gaps in a design. But the deeper act of forming a coherent frame, deciding what should count as primitive, what should be derived, and what kind of world the software is actually modeling still largely sits with the human.
+
+To be fair, once I already have a design, I do find coding agents useful in exposing omissions or suggesting tweaks that make the model more expressive. But even the best models still do not seem able to produce a design that I find satisfying. (Is it a prompt issue? Very likely, but if I have to think hard enough to supply all the relevant structure myself, I might as well produce the first-pass theory directly. But once that structure exists explicitly, I usually find it easier to work from than the stream-of-consciousness natural-language prompts I otherwise tend to give.)
